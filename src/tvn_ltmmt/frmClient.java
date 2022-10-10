@@ -6,6 +6,8 @@ package tvn_ltmmt;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -15,8 +17,6 @@ import java.net.Socket;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
-import static tvn_ltmmt.EchoChatClient.SERVER_IP;
-import static tvn_ltmmt.EchoChatClient.SERVER_PORT;
 
 /**
  *
@@ -29,7 +29,7 @@ public class frmClient extends javax.swing.JFrame {
      */
     public final static String SERVER_IP = "127.0.0.1"; //Địa chỉ IP là 127.0.0.1
     public final static int SERVER_PORT = 7; //Có giả trị từ 0 ..65535
-    
+  
     public frmClient() {
         initComponents();
     }
@@ -55,12 +55,14 @@ public class frmClient extends javax.swing.JFrame {
         txtResult = new javax.swing.JTextArea();
         jLabel4 = new javax.swing.JLabel();
         btnSendServer = new javax.swing.JButton();
+        btnDecrypt = new javax.swing.JButton();
+        btnDemSoTu = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
         jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel1.setText("TCP - Mã hoá Ceasar");
+        jLabel1.setText("TCP - Ceasar Cipher");
 
         jLabel2.setText("Plaintext:");
 
@@ -90,6 +92,20 @@ public class frmClient extends javax.swing.JFrame {
             }
         });
 
+        btnDecrypt.setText("Decrypt");
+        btnDecrypt.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnDecryptActionPerformed(evt);
+            }
+        });
+
+        btnDemSoTu.setText("Word Count");
+        btnDemSoTu.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnDemSoTuActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -108,6 +124,10 @@ public class frmClient extends javax.swing.JFrame {
                         .addComponent(btnEncrypt)
                         .addGap(18, 18, 18)
                         .addComponent(btnSendServer)
+                        .addGap(18, 18, 18)
+                        .addComponent(btnDecrypt, javax.swing.GroupLayout.PREFERRED_SIZE, 73, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(btnDemSoTu)
                         .addGap(0, 0, Short.MAX_VALUE))
                     .addComponent(jScrollPane1))
                 .addContainerGap())
@@ -133,7 +153,9 @@ public class frmClient extends javax.swing.JFrame {
                         .addGap(18, 18, 18)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(btnEncrypt)
-                            .addComponent(btnSendServer))))
+                            .addComponent(btnSendServer)
+                            .addComponent(btnDecrypt)
+                            .addComponent(btnDemSoTu))))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -158,92 +180,86 @@ public class frmClient extends javax.swing.JFrame {
         );
 
         pack();
+        setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnEncryptActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEncryptActionPerformed
-        Socket socket = null;
         try {
-                socket = new Socket(SERVER_IP, SERVER_PORT); //Kết nối đến server
-                System.out.println("Connected: " + socket);
-
-                InputStream is = socket.getInputStream(); //Nhận dữ liệu từ Server trả về
-                OutputStream os = socket.getOutputStream(); //Gửi dữ liệu lên Server
-//                for (int i = '0'; i <= '9'; i++) {
-//                        os.write(i); //Gửi từng số đến máy chủ
-//                        int ch = is.read(); //Chờ kết quả trả về từ server
-//                        System.out.print((char) ch + " "); //Hiển thị kết quả nhận được từ server
-//                        Thread.sleep(200); //Tạm dừng thực thi luồng hiện tại trong 200 mili giây
-//                }
-
-                try {
-                    int k = Integer.valueOf(this.txtKey.getText());
-                    String br = this.txtPlaintext.getText();
-                    this.txtResult.setText(mahoa(br, k));
-                
-//                    BufferedWriter bw = null;
-//                    String fileName = "E:\\Study\\MMT\\TVN_LTMMT\\Data.txt";
-//                    String s = txtResult.getText();
-//
-//                    bw = new BufferedWriter(new FileWriter(fileName));
-//                    bw.write(s);
-//                    bw.close();
-//                    JOptionPane.showMessageDialog(null, "Save file complete!");
-                    
-                    
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }                
-                
-        } catch (IOException ie) {
-                System.out.println("Can't connect to server");
-//        } catch (InterruptedException ex) {
-//            Logger.getLogger(frmClient.class.getName()).log(Level.SEVERE, null, ex);
-        } finally {
-                        if (socket != null) {
-                            try {
-                                socket.close();
-                            } catch (IOException ex) {
-                                Logger.getLogger(frmClient.class.getName()).log(Level.SEVERE, null, ex);
-                            }
-                        }
-                }
+            int k = Integer.valueOf(this.txtKey.getText());
+            String br = this.txtPlaintext.getText();
+            this.txtResult.setText(mahoa(br, k));         
+        } catch (Exception e) {
+                e.printStackTrace();
+        } 
     }//GEN-LAST:event_btnEncryptActionPerformed
 
     private void btnSendServerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSendServerActionPerformed
         Socket socket = null;
-           
         try {
-            InputStream is = socket.getInputStream(); //Nhận dữ liệu từ Server trả về
-            OutputStream os = socket.getOutputStream(); //Gửi dữ liệu lên Server
-//                for (int i = '0'; i <= '9'; i++) {
-//                        os.write(i); //Gửi từng số đến máy chủ
-//                        int ch = is.read(); //Chờ kết quả trả về từ server
-//                        System.out.print((char) ch + " "); //Hiển thị kết quả nhận được từ server
-//                        Thread.sleep(200); //Tạm dừng thực thi luồng hiện tại trong 200 mili giây
-//                }
-
-            BufferedReader br = null;
-            String fileName = "E:\\Study\\MMT\\TVN_LTMMT\\Data.txt";
-            br = new BufferedReader(new FileReader(fileName));
+            socket = new Socket(SERVER_IP, SERVER_PORT);
+            System.out.println("Connected: " + socket);
             
-            StringBuffer sb = new StringBuffer();
-            JOptionPane.showMessageDialog(null, "Open file complete!");
+            DataInputStream din = new DataInputStream(socket.getInputStream());
+            DataOutputStream dout = new DataOutputStream(socket.getOutputStream());
             
-            char[] ca = new char[5];
-            while (br.ready()) {
-                int len = br.read(ca);
-                sb.append(ca, 0, len);
-            }
-            br.close();
-            
-            String chuoi = sb.toString();
-            
-            System.out.println(chuoi);
-        } catch (Exception e) {
-            e.printStackTrace();
+            dout.writeInt(1);
+            int k = Integer.valueOf(this.txtKey.getText());
+            dout.writeInt(k);
+            String rs = txtResult.getText();
+            byte[] data = rs.getBytes("UTF-8");
+            dout.writeInt(data.length);
+            dout.write(data);
+        } catch (IOException ex) {
+            Logger.getLogger(frmClient.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
     }//GEN-LAST:event_btnSendServerActionPerformed
+
+    private void btnDecryptActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDecryptActionPerformed
+        Socket socket = null;
+        try {
+            socket = new Socket(SERVER_IP, SERVER_PORT);
+            System.out.println("Connected: " + socket);
+            
+            DataInputStream din = new DataInputStream(socket.getInputStream());
+            DataOutputStream dout = new DataOutputStream(socket.getOutputStream());
+            
+            dout.writeInt(2);
+            int lenghtn = din.readInt();
+            byte[] data = new byte[lenghtn];
+            din.readFully(data);
+            String str = new String(data, "UTF-8");
+            System.out.println(str);
+            txtResult.setText(str);
+        } catch (IOException ex) {
+            Logger.getLogger(frmClient.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_btnDecryptActionPerformed
+
+    private void btnDemSoTuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDemSoTuActionPerformed
+        Socket socket = null;
+        try {
+            socket = new Socket(SERVER_IP, SERVER_PORT);
+            System.out.println("Connected: " + socket);
+            
+            DataInputStream din = new DataInputStream(socket.getInputStream());
+            DataOutputStream dout = new DataOutputStream(socket.getOutputStream());
+            
+            dout.writeInt(3);
+            int lenghtn = din.readInt();
+            byte[] data = new byte[lenghtn];
+            din.readFully(data);
+            String str = new String(data, "UTF-8");
+            System.out.println(str);
+            
+            int lenghtn1 = din.readInt();
+            byte[] data1 = new byte[lenghtn1];
+            din.readFully(data1);
+            String str1 = new String(data1, "UTF-8");
+            System.out.println(str1);
+        } catch (IOException ex) {
+            Logger.getLogger(frmClient.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_btnDemSoTuActionPerformed
 
     private String mahoa (String br, int k) {
         String kq = "";
@@ -294,6 +310,8 @@ public class frmClient extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnDecrypt;
+    private javax.swing.JButton btnDemSoTu;
     private javax.swing.JButton btnEncrypt;
     private javax.swing.JButton btnSendServer;
     private javax.swing.JLabel jLabel1;
