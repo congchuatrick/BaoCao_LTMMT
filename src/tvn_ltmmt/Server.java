@@ -28,10 +28,8 @@ public class Server {
     }
 
     char mahoakt(char c, int k) {
-        if (!Character.isLetter(c)) {
-            return c;
-        }
-        return (char) ((((Character.toUpperCase(c) - 'A') - k) % 26 + 26) % 26 + 'A');
+        if (!Character.isLetter(c)) return c;
+        return (char) ((((Character.toUpperCase(c) - 'A') + k) % 26 + 26) % 26 + 'A');
     }
 
     public static int countWords(String input) {
@@ -70,18 +68,14 @@ public class Server {
                     flag++;
             }
             if (flag == 1) {
-                dem = dem + String.valueOf(str.charAt(i)) + " ";
-                viTri = viTri + String.valueOf(counter[str.charAt(i)])+ " ";
-            }
-//                System.out.println("The number of occurrences " + String.valueOf(str.charAt(i)) 
-//                        + " in char: " + counter[str.charAt(i)]);
-            
+                dem = dem + String.valueOf(str.charAt(i));
+                viTri = viTri + String.valueOf(counter[str.charAt(i)]);
+            }            
         }
     }
     
     public static void main(String[] args) throws IOException {
         ServerSocket serverSocket = null;
-//        ServerSocket server = new ServerSocket(8888);
         String rs = null;
         int key = 0;
         
@@ -112,7 +106,7 @@ public class Server {
                     } else if (flag == 2){
                         System.out.println("--------------------DECRYPT--------------------");
                         Server echo = new Server();
-                        String kq = echo.mahoa(rs, key);
+                        String kq = echo.mahoa(rs, -key);
                         System.out.println(kq);
                         byte[] data1 = kq.getBytes("UTF-8");
                         dout.writeInt(data1.length);
@@ -120,7 +114,7 @@ public class Server {
                     } else {
                         System.out.println("--------------------WORD COUNT--------------------");
                         Server echo = new Server();
-                        String kq = echo.mahoa(rs, key);
+                        String kq = echo.mahoa(rs, -key);
                         System.out.println("Total words: " + countWords(kq)); 
                         DemKyTu(kq, dem, viTri);   
                         byte[] data1 = dem.getBytes("UTF-8");
