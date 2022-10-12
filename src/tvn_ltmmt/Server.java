@@ -68,8 +68,8 @@ public class Server {
                     flag++;
             }
             if (flag == 1) {
-                dem = dem + String.valueOf(str.charAt(i));
-                viTri = viTri + String.valueOf(counter[str.charAt(i)]);
+                viTri = viTri + String.valueOf(str.charAt(i));
+                dem = dem + String.valueOf(counter[str.charAt(i)]);
             }            
         }
     }
@@ -116,11 +116,11 @@ public class Server {
                         Server echo = new Server();
                         String kq = echo.mahoa(rs, -key);
                         System.out.println("Total words: " + countWords(kq)); 
-                        DemKyTu(kq, dem, viTri);   
-                        byte[] data1 = dem.getBytes("UTF-8");
+                        DemKyTu(kq, viTri, dem);   
+                        byte[] data1 = viTri.getBytes("UTF-8");
                         dout.writeInt(data1.length);
                         dout.write(data1);
-                        byte[] data2 = viTri.getBytes("UTF-8");
+                        byte[] data2 = dem.getBytes("UTF-8");
                         dout.writeInt(data2.length);
                         dout.write(data2);
                         System.out.println("The number of occurrences in char: " + "\n" + dem + "\n" + viTri);
