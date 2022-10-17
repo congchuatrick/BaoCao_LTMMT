@@ -57,6 +57,7 @@ public class frmClient extends javax.swing.JFrame {
         btnSendServer = new javax.swing.JButton();
         btnDecrypt = new javax.swing.JButton();
         btnDemSoTu = new javax.swing.JButton();
+        btnHoanVi = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -106,6 +107,13 @@ public class frmClient extends javax.swing.JFrame {
             }
         });
 
+        btnHoanVi.setText("Hoán vị");
+        btnHoanVi.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnHoanViActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -128,6 +136,8 @@ public class frmClient extends javax.swing.JFrame {
                         .addComponent(btnDecrypt, javax.swing.GroupLayout.PREFERRED_SIZE, 73, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
                         .addComponent(btnDemSoTu)
+                        .addGap(18, 18, 18)
+                        .addComponent(btnHoanVi)
                         .addGap(0, 0, Short.MAX_VALUE))
                     .addComponent(jScrollPane1))
                 .addContainerGap())
@@ -155,7 +165,8 @@ public class frmClient extends javax.swing.JFrame {
                             .addComponent(btnEncrypt)
                             .addComponent(btnSendServer)
                             .addComponent(btnDecrypt)
-                            .addComponent(btnDemSoTu))))
+                            .addComponent(btnDemSoTu)
+                            .addComponent(btnHoanVi))))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -261,6 +272,26 @@ public class frmClient extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_btnDemSoTuActionPerformed
 
+    private void btnHoanViActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnHoanViActionPerformed
+        Socket socket = null;
+        try {
+            socket = new Socket(SERVER_IP, SERVER_PORT);
+            System.out.println("Connected: " + socket);
+            
+            DataInputStream din = new DataInputStream(socket.getInputStream());
+            DataOutputStream dout = new DataOutputStream(socket.getOutputStream());
+            
+            dout.writeInt(4);
+            int lenghtn = din.readInt();
+            byte[] data = new byte[lenghtn];
+            din.readFully(data);
+            String str = new String(data, "UTF-8");
+            txtResult.setText(str);
+        } catch (IOException ex) {
+            Logger.getLogger(frmClient.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_btnHoanViActionPerformed
+
     private String mahoa (String br, int k) {
         String kq = "";
         int n = br.length();
@@ -313,6 +344,7 @@ public class frmClient extends javax.swing.JFrame {
     private javax.swing.JButton btnDecrypt;
     private javax.swing.JButton btnDemSoTu;
     private javax.swing.JButton btnEncrypt;
+    private javax.swing.JButton btnHoanVi;
     private javax.swing.JButton btnSendServer;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;

@@ -5,6 +5,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.lang.ProcessBuilder.Redirect.Type;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.StringTokenizer;
@@ -17,7 +18,8 @@ public class Server {
     public final static int SERVER_PORT = 7;
     public static String dem = "";  
     public static String viTri = "";
-
+    public static char tam1;
+    
     public String mahoa(String br, int k) {
         String kq = "";
         int n = br.length();
@@ -53,7 +55,7 @@ public class Server {
         return count;
     }
     
-    static void DemKyTu(String str, String soLanXuatHien, String kyTu)
+    public static void DemKyTu(String str, String soLanXuatHien, String kyTu)
     {
         int counter[] = new int[256];
         int len = str.length();
@@ -72,6 +74,30 @@ public class Server {
                 dem = dem + String.valueOf(counter[str.charAt(i)]);
             }            
         }
+    }
+    
+    public  static byte[] toBytes(char[] chars) {
+        byte[] bytes = new byte[chars.length * 2];
+        int ci, bi;
+        char ch;
+
+        bi = 0;
+        for (ci = 0; ci < chars.length; ++ci) {
+            ch = chars[ci];
+            bytes[bi++] = (byte)((ch & 0xFF00) >> 8);
+            bytes[bi++] = (byte)(ch & 0x00FF);
+        }
+
+        return bytes;
+    }
+    
+    public static char[] swap(String str, int a, int b)
+    {
+        char ch[] = str.toCharArray();
+        char temp = ch[a];
+        ch[a] = ch[b];
+        ch[b] = temp;
+        return ch;
     }
     
     public static void main(String[] args) throws IOException {
@@ -111,7 +137,7 @@ public class Server {
                         byte[] data1 = kq.getBytes("UTF-8");
                         dout.writeInt(data1.length);
                         dout.write(data1);        
-                    } else {
+                    } else if (flag == 3){
                         System.out.println("--------------------WORD COUNT--------------------");
                         Server echo = new Server();
                         String kq = echo.mahoa(rs, -key);
@@ -124,6 +150,17 @@ public class Server {
                         dout.writeInt(data2.length);
                         dout.write(data2);
                         System.out.println("The number of occurrences in char: " + "\n" + dem + "\n" + viTri);
+                    } else {
+                        System.out.println("--------------------SWAP--------------------");
+                        Server echo = new Server(); //Kết nối với Server
+                        String kq = echo.mahoa(rs, -key); //Giải mã
+                        System.out.println(kq); //In kết quả đã giải mã
+                        int n = kq.length(); //Lấy chiều dài của bản rõ vừa được giải mã
+                        System.out.println(swap(kq, 0, n - 1)); //In kết quả đã hoán vị ở console Server
+                        char[] s = swap(kq, 0, n - 1); //Gán kết quả cho biến s
+                        byte[] data2 = toBytes(s); //toBytes dùng để ép chuỗi từ kiểu Char về kiểu Byte
+                        dout.writeInt(data2.length); //Ghi độ dài của chuỗi để gửi về Client
+                        dout.write(data2); //Ghi nội dung của chuỗi gửi về Client
                     }
                 } catch (IOException e) {
                     System.err.println(" Connection Error: " + e);
